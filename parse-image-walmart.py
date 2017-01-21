@@ -44,23 +44,35 @@ def parse_image(image):
     return ' '.join(keywords)
 
 def parse_wallmart(keywords):
-    products = wapy.search(' '.join(keywords))
-    out = {}
-    out['name'] = products[0].name
-    out['rating'] = products[0].customer_rating
-    out['price'] = products[0].sale_price
+    outa = json.loads(requests.get("http://api.walmartlabs.com/v1/search?apiKey=frt6ajvkqm4aexwjksrukrey&query=" + ' '.join(keywords)).text)
+    outa['items'][0]['name'][0]
+    out['name'] = outa['items'][0]['name'][0]
+    out['rating'] = outa['items'][0]['customerRating']
+    out['price'] = outa['items'][0]['msrp']
+    print(out)
     return json.dumps(out)
 
 class StoreHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        print("Got something")
+        self.send_response(200)
+        self.query_string = self.path.split('image=')[1]
+        with open('/var/www/html/image.jpg', 'wb') as fh:
+            fh.write(data.decode('base64'))
+        self.send_header('Content-type', 'text/json')
+        self.end_headers()
+        self.wfile.write(parse_wallmart(parse_image('http://45.33.95.66/image.jpg')).encode("utf-8"))
+
     def do_POST(self):
+        print("Got something")
         self.send_response(200)
         length = self.headers['content-length']
         data = self.rfile.read(int(length))
         with open('/var/www/html/image.jpg', 'wb') as fh:
             fh.write(data)
-        self.send_header('Content-type', 'text/json')
-        self.end_headers()
-        self.wfile.write(parse_wallmart(parse_image('http://45.33.95.66/image.jpg')).encode())
+        #self.send_header('Content-type', 'text/json')
+        #self.end_headers()
+        self.wfile.write(parse_wallmart(parse_image('http://45.33.95.66/image.jpg')).encode("utf-8"))
 
 server = HTTPServer(('', 8081), StoreHandler)
 server.serve_forever()
