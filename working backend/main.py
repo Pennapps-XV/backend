@@ -86,13 +86,15 @@ def getkeyphrases(product_number):
 
 property = ["name","salePrice","brandName","mediumImage"]
 
-#for i in range(len(property)):
-   # print (get_product_info(property[i]))
 
 for i in range(len(product_num)):
     for j in range(len(property)):
         print (get_product_info(product_num[i], property[j]))
-
+    print (avg_review(product_num[i]))
+    print (getkeyphrases(product_num[i]))
+    
+json=json.dumps(dic)
+print (json)
 
 
 
