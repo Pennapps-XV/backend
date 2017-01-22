@@ -58,7 +58,7 @@ class StoreHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.query_string = self.path.split('image=')[1]
         with open('/var/www/html/image.jpg', 'wb') as fh:
-            fh.write(data.decode('base64'))
+            fh.write(self.query_string.decode('base64'))
         self.send_header('Content-type', 'text/json')
         self.end_headers()
         self.wfile.write(parse_wallmart(parse_image('http://45.33.95.66/image.jpg')).encode("utf-8"))
