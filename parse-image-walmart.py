@@ -47,6 +47,7 @@ def parse_wallmart(keywords):
     print(' '.join(keywords))
     outa = json.loads(requests.get("http://api.walmartlabs.com/v1/search?apiKey=frt6ajvkqm4aexwjksrukrey&query=" + keywords + "&format=json").text)
     outa['items'][0]['name'][0]
+    item_id = outa['items'][0]['itemId']
     out = {}
     out['name'] = outa['items'][0]['name']
 #    out['rating'] = outa['items'][0]['customerRating']
