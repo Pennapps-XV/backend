@@ -15,7 +15,7 @@ def removes(yes):
 
 def post_some_dict(dict):
     headers = {'Content-type': 'application/json'}
-    r = requests.post("http://45.33.95.66:5000/search", data=json.dumps(dict), headers=headers)
+    r = requests.post("http://127.0.0.1:5000/search", data=json.dumps(dict), headers=headers)
     return r.text
 
 def parse_image(image):
@@ -44,12 +44,14 @@ def parse_image(image):
     return ' '.join(keywords)
 
 def parse_wallmart(keywords):
-    outa = json.loads(requests.get("http://api.walmartlabs.com/v1/search?apiKey=frt6ajvkqm4aexwjksrukrey&query=" + ' '.join(keywords)).text)
+    print(' '.join(keywords))
+    outa = json.loads(requests.get("http://api.walmartlabs.com/v1/search?apiKey=frt6ajvkqm4aexwjksrukrey&query=" + keywords + "&format=json").text)
     outa['items'][0]['name'][0]
-    out['name'] = outa['items'][0]['name'][0]
-    out['rating'] = outa['items'][0]['customerRating']
-    out['price'] = outa['items'][0]['msrp']
-    print(out)
+    out = {}
+    out['name'] = outa['items'][0]['name']
+#    out['rating'] = outa['items'][0]['customerRating']
+    out['price'] = outa['items'][0]['salePrice']
+    print(outa)
     return json.dumps(out)
 
 class StoreHandler(BaseHTTPRequestHandler):
