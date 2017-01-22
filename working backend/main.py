@@ -9,29 +9,29 @@ import http.client, urllib.request, urllib.parse, urllib.error, base64
 # setups
 api_key = "gbe55sbs99wfk9x7ab3dxq7r"
 
-product_1_url = "https://simonguozirui.github.io/shop_right/product_1.JPG"
-product_2_url = "https://simonguozirui.github.io/shop_right/product_2.JPG"
-product_3_url = "https://simonguozirui.github.io/shop_right/product_3.JPG"
-product_4_url = "https://simonguozirui.github.io/shop_right/product_4.JPG"
+product_1_url = "http://45.33.95.66/product_1.JPG"
+product_2_url = "http://45.33.95.66/product_2.JPG"
+product_3_url = "http://45.33.95.66/product_3.JPG"
+product_4_url = "http://45.33.95.66/product_4.JPG"
 product_url = [product_1_url, product_2_url, product_3_url, product_4_url]
 
 def removes(yes):
     no = ["Walmart.com", ".", ","]
     for x in no:
         yes = yes.replace(x, '')
-    return yes
+    return yes.upper()
 
 def post_some_dict(dict):
     headers = {'Content-type': 'application/json'}
     r = requests.post("http://127.0.0.1:5000/search", data=json.dumps(dict), headers=headers)
-    #print(r.text)
+    print(r.text)
     return r.text
 
 def parse_image(image):
     out = json.loads(post_some_dict({"image_url": image}))['titles']
     #print(out)
     #out = [x for x in out if 'walmart' in x]
-    threshold = len(out)-1
+    threshold = 2
     #out = [x[27:-9] for x in out]
     #print(out)
     large = []
@@ -39,6 +39,7 @@ def parse_image(image):
         line = line.replace('-', '')
         line = removes(line)
         line = line.split(' ')
+        print(line)
         for word in line:
             large.append(word)
     #print(large)
@@ -137,9 +138,13 @@ def getkeyphrases(product_number):
         return -1
     return data
 
+def pprint(lis):
+    from tabulate import tabulate
+    print(tabulate(lis, headers=['name', 'price', 'brand', 'reviews', 'phrases']))
 
 property = ["name", "salePrice", "brandName", "mediumImage"]
-dict = {"name": "1", "salePrice": "2", "brandName": "3", "mediumImage": "4", "averageReview": "5", "keyPhrases": "6"}
+#dict = {"name": "1", "salePrice": "2", "brandName": "3", "mediumImage": "4", "averageReview": "5", "keyPhrases": "6"}
+dict = []
 list = [];
 for i in range(len(product_num)):
     product_num[i] = parse_wallmart(parse_image(product_url[i]))
@@ -147,23 +152,23 @@ for i in range(len(product_num)):
         print(j)
         if product_num[i] != 000000:
             if 0 is j:
-                dict['name'] = get_product_info(product_num[i], property[j])
+                dict.append(get_product_info(product_num[i], property[j]))
             elif 1 is j:
-                dict['salePrice'] = get_product_info(product_num[i], property[j])
+                dict.append(get_product_info(product_num[i], property[j]))
             elif 2 is j:
-                dict['brandName'] = get_product_info(product_num[i], property[j])
-            elif 3 is j:
-                dict['mediumImage'] = get_product_info(product_num[i], property[j])
+                dict.append(get_product_info(product_num[i], property[j]))
+            #elif 3 is j:
+                #dict.append(get_product_info(product_num[i], property[j]))
             print(get_product_info(product_num[i], property[j]))
     if product_num[i] != 000000:
-        dict["averageReview"] = avg_review(product_num[i])
-        dict["keyPhrases"] = getkeyphrases(product_num[i])
+        dict.append(avg_review(product_num[i]))
+        dict.append(getkeyphrases(product_num[i]))
         list.append(dict)
-        dict = {}
+        dict = []
         print(avg_review(product_num[i]))
         print(getkeyphrases(product_num[i]))
     else:
         print("Product not found")
-print(list)
+pprint(list)
 json = json.dumps(dict)
 #print(json)
