@@ -24,7 +24,7 @@ def removes(yes):
 def post_some_dict(dict):
     headers = {'Content-type': 'application/json'}
     r = requests.post("http://127.0.0.1:5000/search", data=json.dumps(dict), headers=headers)
-    print(r.text)
+    #print(r.text)
     return r.text
 
 def parse_image(image):
@@ -39,7 +39,7 @@ def parse_image(image):
         line = line.replace('-', '')
         line = removes(line)
         line = line.split(' ')
-        print(line)
+        #print(line)
         for word in line:
             large.append(word)
     #print(large)
@@ -146,11 +146,12 @@ property = ["name", "salePrice", "brandName", "mediumImage"]
 dicts = {"name": "1", "salePrice": "2", "brandName": "3", "mediumImage": "4", "averageReview": "5", "keyPhrases": "6"}
 dict = []
 list = []
+print("Processing")
 lists = []
 for i in range(len(product_num)):
     product_num[i] = parse_wallmart(parse_image(product_url[i]))
     for j in range(len(property)):
-        print(j)
+        #print(j)
         if product_num[i] != 000000:
             if 0 is j:
                 o = get_product_info(product_num[i], property[j])
@@ -167,7 +168,7 @@ for i in range(len(product_num)):
             elif 3 is j:
                 o = get_product_info(product_num[i], property[j])
                 dicts['mediumImage'] = o
-            print(get_product_info(product_num[i], property[j]))
+            #print(get_product_info(product_num[i], property[j]))
     if product_num[i] != 000000:
         o = avg_review(product_num[i])
         dict.append(o)
@@ -179,10 +180,11 @@ for i in range(len(product_num)):
         lists.append(dicts)
         dict = []
         dicts = {}
-        print(avg_review(product_num[i]))
-        print(getkeyphrases(product_num[i]))
+        #print(avg_review(product_num[i]))
+        #print(getkeyphrases(product_num[i]))
     else:
-        print("Product not found")
+        #print("Product not found")
+        pass
 pprint(list)
 lists_out = {'items': []}
 lists_out['items'] = lists
