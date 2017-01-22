@@ -3,6 +3,7 @@
 import argparse
 import json
 import requests
+from collections import Counter
 import http.client, urllib.request, urllib.parse, urllib.error, base64
 
 # setups
@@ -13,7 +14,54 @@ product_2_url = "https://simonguozirui.github.io/shop_right/product_2.JPG"
 product_3_url = "https://simonguozirui.github.io/shop_right/product_3.JPG"
 product_4_url = "https://simonguozirui.github.io/shop_right/product_4.JPG"
 product_url = [product_1_url, product_2_url, product_3_url, product_4_url]
-# code that reverse search the url and give the product number
+
+def removes(yes):
+    no = ["Walmart.com", ".", ","]
+    for x in no:
+        yes = yes.replace(x, '')
+    return yes
+
+def post_some_dict(dict):
+    headers = {'Content-type': 'application/json'}
+    r = requests.post("http://127.0.0.1:5000/search", data=json.dumps(dict), headers=headers)
+    #print(r.text)
+    return r.text
+
+def parse_image(image):
+    out = json.loads(post_some_dict({"image_url": image}))['titles']
+    #print(out)
+    #out = [x for x in out if 'walmart' in x]
+    threshold = len(out)-1
+    #out = [x[27:-9] for x in out]
+    #print(out)
+    large = []
+    for line in out:
+        line = line.replace('-', '')
+        line = removes(line)
+        line = line.split(' ')
+        for word in line:
+            large.append(word)
+    #print(large)
+    c = Counter(large).most_common()
+
+    keywords = []
+
+    for x in c:
+        if x[1] > threshold:
+            keywords.append(x[0])
+    #print(keywords)
+    return ' '.join(keywords)
+
+def parse_wallmart(keywords):
+    #print(keywords)
+    outa = json.loads(requests.get("http://api.walmartlabs.com/v1/search?apiKey=frt6ajvkqm4aexwjksrukrey&query=" + keywords + "&format=json").text)
+    #print(outa)
+    #outa['items'][0]['name'][0]
+    try:
+        item_id = outa['items'][0]['itemId']
+    except:
+        item_id = 000000
+    return item_id
 
 
 product_1_num = 10535793
@@ -45,7 +93,9 @@ def pull_reviews(product_number):
 
 def avg_review(product_number):
     review_json = pull_reviews(product_number)
-    avg_review = float(review_json['reviewStatistics']['averageOverallRating'])
+    try:
+        avg_review = float(review_json['reviewStatistics']['averageOverallRating'])
+    except: avg_review = 0.0
     return avg_review
 
 
@@ -92,27 +142,28 @@ property = ["name", "salePrice", "brandName", "mediumImage"]
 dict = {"name": "1", "salePrice": "2", "brandName": "3", "mediumImage": "4", "averageReview": "5", "keyPhrases": "6"}
 list = [];
 for i in range(len(product_num)):
+    product_num[i] = parse_wallmart(parse_image(product_url[i]))
     for j in range(len(property)):
         print(j)
-        if 0 is j:
-            dict['name'] = get_product_info(product_num[i], property[j])
-        elif 1 is j:
-            dict['salePrice'] = get_product_info(product_num[i], property[j])
-        elif 2 is j:
-            dict['brandName'] = get_product_info(product_num[i], property[j])
-        elif 3 is j:
-            dict['mediumImage'] = get_product_info(product_num[i], property[j])
-        print(get_product_info(product_num[i], property[j]))
-    dict["averageReview"] = avg_review(product_num[i])
-    dict["keyPhrases"] = getkeyphrases(product_num[i])
-    list.append(dict)
-    dict = {}
-    print(avg_review(product_num[i]))
-    print(getkeyphrases(product_num[i]))
+        if product_num[i] != 000000:
+            if 0 is j:
+                dict['name'] = get_product_info(product_num[i], property[j])
+            elif 1 is j:
+                dict['salePrice'] = get_product_info(product_num[i], property[j])
+            elif 2 is j:
+                dict['brandName'] = get_product_info(product_num[i], property[j])
+            elif 3 is j:
+                dict['mediumImage'] = get_product_info(product_num[i], property[j])
+            print(get_product_info(product_num[i], property[j]))
+    if product_num[i] != 000000:
+        dict["averageReview"] = avg_review(product_num[i])
+        dict["keyPhrases"] = getkeyphrases(product_num[i])
+        list.append(dict)
+        dict = {}
+        print(avg_review(product_num[i]))
+        print(getkeyphrases(product_num[i]))
+    else:
+        print("Product not found")
 print(list)
 json = json.dumps(dict)
 #print(json)
-
-
-
-    
