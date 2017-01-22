@@ -14,7 +14,11 @@ def product():
 def reviews():
 	review_url = "http://api.walmartlabs.com/v1/reviews/" + str(product_num) + "?apiKey=" + api_key + "&format=json"
 	reviews_data = requests.get(review_url)
-	print (reviews_data.json())
+	print (reviews_data.json()['itemReview']['reviews']['review']['name']['reviewText'])
+	#for i in range(reviews_data.json().length()):
+		#print (reviews_data.json())
+
+
 
 #product()
 reviews()
