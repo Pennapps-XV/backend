@@ -73,8 +73,8 @@ class StoreHandler(BaseHTTPRequestHandler):
         data = self.rfile.read(int(length))
         with open('/var/www/html/image.jpg', 'wb') as fh:
             fh.write(data)
-        #self.send_header('Content-type', 'text/json')
-        #self.end_headers()
+        self.send_header('Content-type', 'text/json')
+        self.end_headers()
         self.wfile.write(parse_wallmart(parse_image('http://45.33.95.66/image.jpg')).encode("utf-8"))
 
 server = HTTPServer(('', 8081), StoreHandler)
