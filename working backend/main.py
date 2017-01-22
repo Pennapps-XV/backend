@@ -143,32 +143,49 @@ def pprint(lis):
     print(tabulate(lis, headers=['name', 'price', 'brand', 'reviews', 'phrases']))
 
 property = ["name", "salePrice", "brandName", "mediumImage"]
-#dict = {"name": "1", "salePrice": "2", "brandName": "3", "mediumImage": "4", "averageReview": "5", "keyPhrases": "6"}
+dicts = {"name": "1", "salePrice": "2", "brandName": "3", "mediumImage": "4", "averageReview": "5", "keyPhrases": "6"}
 dict = []
-list = [];
+list = []
+lists = []
 for i in range(len(product_num)):
     product_num[i] = parse_wallmart(parse_image(product_url[i]))
     for j in range(len(property)):
         print(j)
         if product_num[i] != 000000:
             if 0 is j:
-                dict.append(get_product_info(product_num[i], property[j]))
+                o = get_product_info(product_num[i], property[j])
+                dict.append(o)
+                dicts['name'] = o
             elif 1 is j:
-                dict.append(get_product_info(product_num[i], property[j]))
+                o = get_product_info(product_num[i], property[j])
+                dict.append(o)
+                dicts['salePrice'] = o
             elif 2 is j:
-                dict.append(get_product_info(product_num[i], property[j]))
-            #elif 3 is j:
-                #dict.append(get_product_info(product_num[i], property[j]))
+                o = get_product_info(product_num[i], property[j])
+                dict.append(o)
+                dicts['brandName'] = o
+            elif 3 is j:
+                o = get_product_info(product_num[i], property[j])
+                dicts['mediumImage'] = o
             print(get_product_info(product_num[i], property[j]))
     if product_num[i] != 000000:
-        dict.append(avg_review(product_num[i]))
-        dict.append(getkeyphrases(product_num[i]))
+        o = avg_review(product_num[i])
+        dict.append(o)
+        dicts['averageReview'] = o
+        o = getkeyphrases(product_num[i])
+        dict.append(o)
+        dicts['keyPhrases'] = o
         list.append(dict)
+        lists.append(dicts)
         dict = []
+        dicts = {}
         print(avg_review(product_num[i]))
         print(getkeyphrases(product_num[i]))
     else:
         print("Product not found")
 pprint(list)
-json = json.dumps(dict)
-#print(json)
+lists_out = {'items': []}
+lists_out['items'] = lists
+json = json.dumps(lists_out)
+with open('data.json', 'w') as fh:
+    fh.write(json)
