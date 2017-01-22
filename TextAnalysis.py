@@ -10,13 +10,11 @@ import http.client, urllib.request, urllib.parse, urllib.error, base64, json
 #    }
 #  ]
 #}
-from flask import json
+import json
 
 
 def getkeyphrases(text):
-    body = {
-        "documents": [
-            {
+    body = { "documents": [{
                 "id": "1",
                 "text": text
             }
@@ -31,22 +29,11 @@ def getkeyphrases(text):
         conn = http.client.HTTPSConnection('westus.api.cognitive.microsoft.com')
         conn.request("POST", "/text/analytics/v2.0/keyPhrases?%s" % params, str(body), headers)
         response = conn.getresponse()
-        data = json.loads(response.read())["documents"][0]["keyPhrases"]
+        data = json.loads(response.read().decode())["documents"][0]["keyPhrases"]
         conn.close()
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+        print (e)
+        #print("[Errno {0}] {1}".format(e.errno, e.strerror))
     return data
 
-body = {
-    "documents": [
-        {
-            "id": "1",
-            "text": "First document. Hello world. I'm awesome."
-        },
-        {
-            "id": "2",
-            "text": "Final document. Calling Cognitive API again."
-        }
-    ]
-    }
-print(getkeyphrases("Hello world"))
+print(getkeyphrases("The service was amazing."))

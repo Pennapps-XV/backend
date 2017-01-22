@@ -2,9 +2,9 @@ import json
 import sys
 import requests
 from collections import Counter
-from wapy.api import Wapy
+#from wapy.api import Wapy
 from http.server import BaseHTTPRequestHandler, HTTPServer
-wapy = Wapy('frt6ajvkqm4aexwjksrukrey')
+#wapy = Wapy('frt6ajvkqm4aexwjksrukrey')
 
 
 def removes(yes):
